@@ -23,20 +23,18 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-cmake_minimum_required( VERSION 3.1.0 )
 set( CMAKE_LEGACY_CYGWIN_WIN32 0 )
-project( openssl )
 
 set( CMAKE_DISABLE_SOURCE_CHANGES ON )
 set( CMAKE_DISABLE_IN_SOURCE_BUILD ON )
 
-set( CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" )
+set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake" )
 
 option( WITH_APPS "Build applications" ON )
 
 # OpenSSL version detection imported from FindOpenSSL.cmake
 
-file( STRINGS "${PROJECT_SOURCE_DIR}/include/openssl/opensslv.h" openssl_version_str
+file( STRINGS "${CMAKE_CURRENT_LIST_DIR}/include/openssl/opensslv.h" openssl_version_str
   REGEX "^#[\t ]*define[\t ]+OPENSSL_VERSION_NUMBER[\t ]+0x([0-9a-fA-F])+.*" )
 
 function(from_hex HEX DEC)
@@ -156,11 +154,11 @@ if( MSVC OR ( WIN32 AND MINGW AND NOT CYGWIN ) )
 endif()
 
 # Begin configure public headers
-file( COPY ${PROJECT_SOURCE_DIR}/include/internal DESTINATION include )
-file( COPY ${PROJECT_SOURCE_DIR}/include/crypto DESTINATION include )
-file( COPY ${PROJECT_SOURCE_DIR}/include/openssl DESTINATION include )
+file( COPY ${CMAKE_CURRENT_LIST_DIR}/include/internal DESTINATION include )
+file( COPY ${CMAKE_CURRENT_LIST_DIR}/include/crypto DESTINATION include )
+file( COPY ${CMAKE_CURRENT_LIST_DIR}/include/openssl DESTINATION include )
 
-file( READ ${PROJECT_SOURCE_DIR}/opensslconf.h.cmake CONF )
+file( READ ${CMAKE_CURRENT_LIST_DIR}/opensslconf.h.cmake CONF )
 set( CONF "
 #define OPENSSL_NO_MD2
 #define OPENSSL_NO_RC5
@@ -175,6 +173,12 @@ configure_file( ${PROJECT_BINARY_DIR}/opensslconf.h.cmake
 
 add_subdirectory(crypto)
 add_subdirectory(ssl)
+
+target_include_directories(crypto PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+target_include_directories(ssl PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+
+target_include_directories(crypto PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+target_include_directories(ssl PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 
 if( WITH_APPS AND NOT ANDROID AND NOT IOS )
   add_subdirectory(apps)
