@@ -183,7 +183,7 @@ target_include_directories(ssl PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 if( WITH_APPS AND NOT ANDROID AND NOT IOS )
   add_subdirectory(apps)
 
-  file( READ ${PROJECT_SOURCE_DIR}/c_rehash.cmake C_REHASH )
+  file( READ ${CMAKE_CURRENT_SOURCE_DIR}/c_rehash.cmake C_REHASH )
   string( REPLACE "@OPENSSLDIR@" "${OPENSSLDIR}" C_REHASH "${C_REHASH}" )
   string( REPLACE "@CMAKE_INSTALL_PREFIX@" "${CMAKE_INSTALL_PREFIX}" C_REHASH "${C_REHASH}" )
   file( WRITE ${PROJECT_BINARY_DIR}/c_rehash "${C_REHASH}" )
